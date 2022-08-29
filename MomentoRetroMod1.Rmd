@@ -1,0 +1,255 @@
+---
+title: 'Momento Retroalimentación: Módulo 1 Técnicas de procesamiento de datos para
+  el análisis estadístico y para la construcción de modelos'
+author: "Amy Murakami Tsutsumi - A01750185"
+date: "2022-08-22"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Contestar dos preguntas e inventar una 
+
+# Leer datos 
+```{r}
+db=read.csv("ds_salaries.csv") #leer la base de datos
+salary = db$salary_in_usd   #para llamar una variable
+remoteRatio = db$remote_ratio   #para llamar una variable
+```
+
+# Exploración de la base de datos 
+## 1. Calcula medidas estadísticas
+### Variables cuantitativas
+Las variables cuantitativas que se utilizarán son el salario en dólares y el porcentaje de trabajo remoto ya que son las variables más significativas. Se excluyeron las variables del año en que se paga el salario y el salario en su respectivo tipo de cambio ya que son valores que no aportan datos necesarios para las preguntas objetivo. 
+
+#### * Medidas de tendencia central: promedio, media, mediana y moda de los datos.
+```{r}
+n = length(db$X) #N
+sprintf("Número de datos: %s", n)
+meanSalary = mean(salary) #Promedio de salario
+sprintf("Promedio salario en dólares: %s", meanSalary)
+meanRemoteRatio = mean(remoteRatio) #Promedio de modalidad
+sprintf("Promedio de modalidad: %s", meanRemoteRatio)
+
+medianSalary = median(salary) #Mediana de salario
+sprintf("Mediana del salario en dólares: %s", medianSalary)
+medianRemoteRatio = median(remoteRatio) #Mediana de modalidad
+sprintf("Mediana de modalidad: %s", medianRemoteRatio)
+
+library(modeest)
+modeSalary = mlv(salary, method = "mfv")[1] #Moda de salario
+sprintf("Moda del salario en dólares: %s", modeSalary)
+modeRemoteRatio = mlv(remoteRatio, method = "mfv")[1] #Moda de modalidad
+sprintf("Moda de modalidad: %s", modeRemoteRatio)
+```
+
+#### * Medidas de dispersión: rango: máximo - mínimo, varianza, desviación estándar.
+```{r}
+maxSalary = max(salary) # Maximo valor de salario
+sprintf("Salario máximo: %s", maxSalary)
+maxRemoteRatio = max(remoteRatio) # Maximo valor de modalidad
+sprintf("Modalidad máxima: %s", maxRemoteRatio)
+
+minSalary = min(salary) # Minimo valor de salario
+sprintf("Salario mínimo: %s", minSalary)
+minRemoteRatio = min(remoteRatio) # Minimo valor de modalidad
+sprintf("Modalidad mínima: %s", minRemoteRatio)
+
+varSalary = var(salary) # Varianza de modalidad
+sprintf("Varianza del salario: %s", varSalary)
+varRemoteRatio = var(remoteRatio) # Varianza de modalidad
+sprintf("Varianza de la modalidad: %s", varRemoteRatio)
+
+deSalary = sd(salary) # Desviacion estandar salario
+sprintf("Desviación estándar del salario: %s", deSalary)
+deRemoteRatio = sd(remoteRatio) # Desviacion estandar modalidad
+sprintf("Desviación estándar de modalidad: %s", deRemoteRatio)
+```
+
+### Variables cualitativas y Variables categóricas 
+
+Las variables cualitativas y categóricas que se utilizarán son el nivel de experiencia, el nombre de empleo, el tipo de empleo, la ubicación de la compañía y el tamaño de la compañía. Únicamente se excluyó el tipo de cambio ya que es muy similar a los datos de ubicación de la compañía. 
+
+#### * Tabla de distribución de frecuencia, moda y distribución de los datos (diagramas de barras, diagramas de pastel)
+```{r}
+print("Tabla de distribución de frecuencia del nivel de experiencia:")
+experience = db$experience_level
+experience_table = table(experience)
+print(experience_table)
+modeExperience = mlv(experience, method = "mfv")[1] #Moda 
+sprintf("Moda del nivel de experiencia: %s", modeExperience)
+sorted_table = sort(experience_table, decreasing = TRUE)[1:4]
+barplot(sorted_table, width = 1, cex.names = 0.6, xlab="Nivel de experiencia", ylab="Frecuencia", col = c("antiquewhite", "antiquewhite2", "antiquewhite3", "antiquewhite4"), main="Frecuencia del nivel de experiencia")
+```
+```{r}
+print("Tabla de distribución de frecuencia del tipo de empleo:")
+employment_type = db$employment_type
+employment_type_table = table(employment_type)
+print(employment_type_table)
+modeEmployment = mlv(employment_type, method = "mfv")[1] #Moda 
+sprintf("Moda del tipo de empleo: %s", modeEmployment)
+sorted_table = sort(employment_type_table, decreasing = TRUE)[1:4]
+barplot(sorted_table, width = 1, cex.names = 0.6, xlab="Tipo de empleo", ylab="Frecuencia",col = c("aquamarine", "aquamarine2", "aquamarine3", "aquamarine4"), main="Frecuencia del tipo de empleo")
+```
+
+
+```{r}
+print("Tabla de distribución de frecuencia del empleo:")
+job_title = db$job_title
+job_title_table = table(job_title)
+print(job_title_table)
+modeJobTitle = mlv(job_title, method = "mfv")[1] #Moda 
+sprintf("Moda del empleo: %s", modeJobTitle)
+sorted_table = sort(job_title_table, decreasing = TRUE)[1:54]
+par(mar=c(5,10,4,1)+.1)
+barplot(sorted_table, width = 1, cex.names = 0.6, col = c("darkslategray", "darkslategray1", "darkslategray2", "darkslategray3", "darkslategray4"), horiz=T , las=2, main="Frecuencia de empleo")
+title(xlab = "Frecuencia", line = 3) 
+title(ylab = "Empleos", line = 9) 
+```
+```{r}
+print("Tabla de distribución de frecuencia de la ubicación de la compañía:")
+company_location = db$company_location
+company_location_table = table(company_location)
+print(company_location_table)
+modeCompLoc = mlv(company_location, method = "mfv")[1] #Moda 
+sprintf("Moda de la ubicación del empleo: %s", modeCompLoc)
+sorted_table = sort(company_location_table, decreasing = TRUE)[1:50]
+par(mar=c(5,8,4,1)+.1)
+barplot(sorted_table, width = 1, cex.names = 0.6, col = c("burlywood1", "burlywood2", "burlywood3", "burlywood4"), las=2, main="Frecuencia de la ubicación de la compañía", xlab="Ubicación de la compañía", ylab="Frecuencia")
+
+```
+```{r}
+print("Tabla de distribución de frecuencia del tamaño de la compañía:")
+company_size = db$company_size
+company_size_table = table(company_size)
+print(company_size_table)
+modeCompSize = mlv(company_size, method = "mfv")[1] #Moda 
+sprintf("Moda de la ubicación del empleo: %s", modeCompSize)
+sorted_table = sort(company_size_table, decreasing = TRUE)[1:3]
+par(mar=c(5,8,4,1)+.1)
+barplot(sorted_table, width = 1, cex.names = 0.6, col = c("cadetblue", "cadetblue3", "cadetblue2"), main="Frecuencia del tamaño de la compañía", xlab="Tamaño de la compañía", ylab="Frecuencia")
+```
+# Explora los datos usando herramientas de visualización
+## Variables cuantitativas:
+### Medidas de posición: cuartiles, outlier (valores atípicos), boxplots
+```{r}
+print("Cuartiles de salario")
+
+q1_c=quantile(salary,0.25)  #Cuantil 1
+q3_c = quantile(salary, 0.75) #Cuantil 3
+ri_c= IQR(salary) #Rango intercuartílico 
+y2 = q3_c+1.5*ri_c
+par(mfrow=c(2,1))  #Matriz de gráficos de 2x1
+boxplot(salary,horizontal=TRUE,ylim=c(0,y2),main="Boxplot de salario")
+abline(v=q3_c+1.5*ri_c,col="red")  #linea vertical en el límite de los datos atípicos
+X = db[salary<q3_c+1.5*ri_c,c("salary_in_usd")] #Quitar datos atípicos de la matriz M en la variable X
+summary(X)
+
+```
+
+```{r}
+print("Cuartiles de modalidad")
+
+q1_c=quantile(remoteRatio,0.25)  #Cuantil 1
+q3_c = quantile(remoteRatio, 0.75) #Cuantil 3
+ri_c= IQR(remoteRatio) #Rango intercuartílico 
+y2 = q3_c+1.5*ri_c
+par(mfrow=c(2,1))  #Matriz de gráficos de 2x1
+boxplot(remoteRatio,horizontal=TRUE,ylim=c(0,y2), main="Boxplot de modalidad")
+abline(v=q3_c+1.5*ri_c,col="red")  #linea vertical en el límite de los datos atípicos
+X = db[remoteRatio<q3_c+1.5*ri_c,c("remote_ratio")] #Quitar datos atípicos de la matriz M en la variable X
+summary(X)
+```
+
+
+### Análisis de distribución de los datos (Histogramas). Identificar si tiene forma simétrica o asimétrica
+```{r}
+qqnorm(salary)
+qqline(salary)
+hist(salary,prob=TRUE,col=0)
+x=seq(min(salary),max(salary),0.1)
+y=dnorm(x,mean(salary),sd(salary))
+lines(x,y,col="red")
+
+library(moments)
+skewness(salary)
+kurtosis(salary)
+```
+La gráfica anterior tiene una asimetría postiva, es decir, tiene un sesgo a la derecha. Además, el valor del coeficiente de sesgo al ser un valor mayor a uno significa que esta muy sesgada a la derecha. Incluso el valor de la curtosis, al ser un número mayor a 3, indica que es leptocúrtica. 
+
+```{r}
+qqnorm(remoteRatio)
+qqline(remoteRatio)
+hist(remoteRatio,prob=TRUE,col=0)
+x=seq(min(remoteRatio),max(remoteRatio),0.1)
+y=dnorm(x,mean(remoteRatio),sd(remoteRatio))
+lines(x,y,col="red")
+library(moments)
+skewness(remoteRatio)
+kurtosis(remoteRatio)
+```
+
+La gráfica anterior es asimétrica. Además, el valor del coeficiente de sesgo al ser un valor menor a uno significa que esta muy sesgada a la izquierda. Incluso el valor de la curtosis, al ser un número menor a 3, indica que es platicúrtica.
+
+# Analizar los datos y contestar las preguntas guía
+
+### ¿Influye el tamaño de la compañía en el salario que puede ofrecer a un analista de datos?
+```{r}
+data_analyst= db[db$job_title == "Data Analyst",]
+data_small = data_analyst[data_analyst$company_size == "S",]
+small = mean(data_small$salary_in_us)
+sprintf("Promedio del salario en empresa pequeña: %s", small)
+
+data_medium = data_analyst[data_analyst$company_size == "M",]
+medium = mean(data_medium$salary_in_us)
+sprintf("Promedio del salario en empresa mediana: %s", medium)
+
+data_large = data_analyst[data_analyst$company_size == "L",]
+large = mean(data_large$salary_in_us)
+sprintf("Promedio del salario en empresa grande: %s", large)
+
+datos_tamaño = c("S"=small, "M"=medium, "L"=large)
+barplot(datos_tamaño, width = 1, cex.names = 0.6, col = c("plum2", "plum3", "plum4"), main="Tamaño de compañía y salario promedio", xlab="Tamaño de la compañía", ylab="Salario")
+```
+
+Al observar los datos podemos notar que no es de tanta importancia el tamaño de la compañía al considerar los mejores salarios, ya que en promedio los mejores salarios se encuentran en empresas medianas. 
+
+### ¿Cuál es el salario al que pueda aspirar un analista de datos?
+```{r}
+data_analyst_salary = db[db$job_title == "Data Analyst", ]
+mean_salary_da = mean(data_analyst_salary$salary_in_usd)
+sprintf("Promedio del salario de analista de datos: %s", mean_salary_da)
+```
+
+
+### Top 35 empleos en USA 
+```{r}
+data_usa = db[db$company_location == "US", ]
+data_job_usa = data_usa$job_title
+data_job_usa_table = table(data_job_usa)
+print(data_job_usa_table)
+sorted_table = sort(data_job_usa_table, decreasing = FALSE)[1:35]
+par(mar=c(5,10,4,1)+.1)
+barplot(sorted_table, width = 1, cex.names = 0.6, col = c("darkslategray", "darkslategray1", "darkslategray2", "darkslategray3", "darkslategray4"), horiz=T , las=2, main="Top 35 empleos en USA")
+title(xlab = "Número de empleados", line = 3) 
+title(ylab = "Empleos", line = 9) 
+```
+Podemos notar que los empleos más populares en Estados Unidos son: Data Science Manager, Data Analytics Manager y BI Data Analyst. 
+
+### Modalidad con mayor salario 
+```{r}
+sorted_db = db[order(db$salary_in_usd, decreasing = TRUE), ]
+top_sorted_db = head(sorted_db, 1)
+top_modality = top_sorted_db$remote_ratio
+print("La Modalidad que Cuenta con un Mayor Salario es: ")
+if (top_modality == 100) {
+  print("Modalidad en línea")
+  top_modality
+}
+barplot(table(sorted_db$remote_ratio), col = c("chocolate1", "chocolate2", "chocolate3"), main="Modalidad y salario", xlab="Modalidad", ylab="Salario")
+```
+Podemos observar que la modalidad que tiene un mejor salario es la que es 100% remota. 
