@@ -11,7 +11,9 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
-\begin{center} Módulo 1: Estadística para ciencia de datos y nombre de la concentración \end{center}
+\begin{center} Módulo 1: Estadística para ciencia de datos \end{center}
+
+\begin{center} Inteligencia artificial avanzada para la ciencia de datos I \end{center}
 
 \begin{center} Grupo 101 \end{center}
 
